@@ -1,0 +1,14 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/wordl
+    driver-class-name: org.postgresql.Driver
+    username: wordl
+    password: q6yN^?4}m<>rvKDx
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+
+  liquibase:
+    change-log: classpath:/config/liquibase/master.xml
