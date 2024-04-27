@@ -9,17 +9,22 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 @Data
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
-@Table(name = "wordl_available_word")
-public class AvailableWord {
+@Table(name = "wordl_word")
+public class Word {
 
     @Id
     private Long id;
 
     @Column(nullable = false, unique = true)
     private String word;
+
+    @Column
+    private Date used;
 }

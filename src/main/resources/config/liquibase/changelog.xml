@@ -7,4 +7,13 @@
         <sqlFile path="available_word_insert.sql" relativeToChangelogFile="true"/>
     </changeSet>
 
+    <changeSet id="0.0.2" author="Angry Ghandi">
+        <sqlFile path="available_word_alter.sql" relativeToChangelogFile="true"/>
+        <sqlFile path="wordl_word_update.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+
+    <changeSet id="0.0.3" author="Angry Ghandi">
+        <sqlFile path="wordl_words_additional.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+
 </databaseChangeLog>

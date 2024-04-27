@@ -40,15 +40,39 @@ class WordControllerTest {
     }
 
     @Test
-    void list() {
-        when(wordServiceMock.list()).thenReturn(List.of("aback", "bacon", "cabal"));
+    void all() {
+        when(wordServiceMock.all()).thenReturn(List.of("aback", "bacon", "cabal"));
 
-        final ResponseEntity<List<String>> response = cut.list();
+        final ResponseEntity<List<String>> response = cut.all();
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).containsExactly("aback", "bacon", "cabal");
 
-        verify(wordServiceMock).list();
+        verify(wordServiceMock).all();
+    }
+
+    @Test
+    void used() {
+        when(wordServiceMock.used()).thenReturn(List.of("aback", "bacon", "cabal"));
+
+        final ResponseEntity<List<String>> response = cut.used();
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).containsExactly("aback", "bacon", "cabal");
+
+        verify(wordServiceMock).used();
+    }
+
+    @Test
+    void unused() {
+        when(wordServiceMock.unused()).thenReturn(List.of("aback", "bacon", "cabal"));
+
+        final ResponseEntity<List<String>> response = cut.unused();
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).containsExactly("aback", "bacon", "cabal");
+
+        verify(wordServiceMock).unused();
     }
 
     @Test

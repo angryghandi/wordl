@@ -1,8 +1,8 @@
 package com.angryghandi.wordl.service.impl;
 
 import com.angryghandi.wordl.dto.SearchRequest;
-import com.angryghandi.wordl.entity.AvailableWord;
-import com.angryghandi.wordl.repository.AvailableWordRepository;
+import com.angryghandi.wordl.entity.Word;
+import com.angryghandi.wordl.repository.WordRepository;
 import com.angryghandi.wordl.service.WordService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,20 +13,32 @@ import java.util.List;
 @RequiredArgsConstructor
 public class WordServiceImpl implements WordService {
 
-    private final AvailableWordRepository availableWordRepository;
+    private final WordRepository wordRepository;
 
     @Override
-    public List<String> list() {
-        final List<AvailableWord> words = availableWordRepository.findAll();
-        return words.stream().map(AvailableWord::getWord).toList();
+    public List<String> all() {
+        final List<Word> words = wordRepository.findAllByOrderByWord();
+        return words.stream().map(Word::getWord).toList();
+    }
+
+    @Override
+    public List<String> used() {
+        final List<Word> words = wordRepository.findAllByUsedNotNullOrderByWord();
+        return words.stream().map(Word::getWord).toList();
+    }
+
+    @Override
+    public List<String> unused() {
+        final List<Word> words = wordRepository.findAllByUsedNullOrderByWord();
+        return words.stream().map(Word::getWord).toList();
     }
 
     @Override
     public List<String> search(final SearchRequest searchRequest) {
         final String searchWord = searchRequest.getWord().toLowerCase();
-        final List<AvailableWord> words = availableWordRepository.findAllByWordLikeOrderByWord(searchWord);
+        final List<Word> words = wordRepository.findAllByWordLikeOrderByWord(searchWord);
 
-        return words.stream().map(AvailableWord::getWord)
+        return words.stream().map(Word::getWord)
                 .filter(word -> includes(word, searchRequest.getIncludes()))
                 .filter(word -> excludes(word, searchRequest.getExcludes()))
                 .toList();

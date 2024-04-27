@@ -1,8 +1,8 @@
 package com.angryghandi.wordl.service.impl;
 
 import com.angryghandi.wordl.dto.SearchRequest;
-import com.angryghandi.wordl.entity.AvailableWord;
-import com.angryghandi.wordl.repository.AvailableWordRepository;
+import com.angryghandi.wordl.entity.Word;
+import com.angryghandi.wordl.repository.WordRepository;
 import com.angryghandi.wordl.service.WordService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,44 +28,77 @@ import static org.mockito.Mockito.when;
 @MockitoSettings(strictness = Strictness.WARN)
 class WordServiceImplTest {
 
+    private static final String ABACK = "aback";
+
+    private static final String ABASE = "abase";
+
+    private static final String ABATE = "abate";
+
+    private static final String BACON = "bacon";
+
+    private static final String CABAL = "cabal";
+
+    private static final List<Word> WORDS = List.of(
+            Word.builder().word(ABACK).build(),
+            Word.builder().word(BACON).build(),
+            Word.builder().word(CABAL).build()
+    );
+
     @Mock
-    private AvailableWordRepository availableWordRepositoryMock;
+    private WordRepository wordRepositoryMock;
 
     private WordService cut;
 
     @BeforeEach
     void beforeEach() {
-        cut = new WordServiceImpl(availableWordRepositoryMock);
+        cut = new WordServiceImpl(wordRepositoryMock);
     }
 
     @AfterEach
     void afterEach() {
-        verifyNoMoreInteractions(availableWordRepositoryMock);
+        verifyNoMoreInteractions(wordRepositoryMock);
     }
 
     @Test
-    void list() {
-        when(availableWordRepositoryMock.findAll()).thenReturn(List.of(
-                AvailableWord.builder().word("aback").build(),
-                AvailableWord.builder().word("bacon").build(),
-                AvailableWord.builder().word("cabal").build()
-        ));
+    void all() {
+        when(wordRepositoryMock.findAllByOrderByWord()).thenReturn(WORDS);
 
+        final List<String> words = cut.all();
 
-        final List<String> words = cut.list();
+        assertThat(words).containsExactly(ABACK, BACON, CABAL);
 
-        assertThat(words).containsExactly("aback", "bacon", "cabal");
+        verify(wordRepositoryMock).findAllByOrderByWord();
+    }
 
-        verify(availableWordRepositoryMock).findAll();
+    @Test
+    void used() {
+        when(wordRepositoryMock.findAllByUsedNotNullOrderByWord()).thenReturn(WORDS);
+
+        final List<String> words = cut.used();
+
+        assertThat(words).containsExactly(ABACK, BACON, CABAL);
+
+        verify(wordRepositoryMock).findAllByUsedNotNullOrderByWord();
+    }
+
+    @Test
+    void unused() {
+        when(wordRepositoryMock.findAllByUsedNullOrderByWord()).thenReturn(WORDS);
+
+        final List<String> words = cut.unused();
+
+        assertThat(words).containsExactly(ABACK, BACON, CABAL);
+
+        verify(wordRepositoryMock).findAllByUsedNullOrderByWord();
     }
 
     @Test
     void search() {
         final String searchWord = "a_____";
-        when(availableWordRepositoryMock.findAllByWordLikeOrderByWord(searchWord)).thenReturn(List.of(
-                AvailableWord.builder().word("aback").build(),
-                AvailableWord.builder().word("abase").build(),
-                AvailableWord.builder().word("abate").build()
+        when(wordRepositoryMock.findAllByWordLikeOrderByWord(searchWord)).thenReturn(List.of(
+                Word.builder().word(ABACK).build(),
+                Word.builder().word(ABASE).build(),
+                Word.builder().word(ABATE).build()
         ));
 
         final SearchRequest searchRequest = SearchRequest.builder()
@@ -76,9 +109,9 @@ class WordServiceImplTest {
 
         final List<String> words = cut.search(searchRequest);
 
-        assertThat(words).containsExactly("abase");
+        assertThat(words).containsExactly(ABASE);
 
-        verify(availableWordRepositoryMock).findAllByWordLikeOrderByWord(searchWord);
+        verify(wordRepositoryMock).findAllByWordLikeOrderByWord(searchWord);
     }
 
     @ParameterizedTest
@@ -95,23 +128,23 @@ class WordServiceImplTest {
 
     static Stream<Arguments> includesParameters() {
         return Stream.of(
-                Arguments.of("about", List.of('a', 'b', 'o', 'u', 'x'), false),
-                Arguments.of("about", List.of('a', 'b', 'o', 'x', 't'), false),
-                Arguments.of("about", List.of('a', 'b', 'x', 'u', 't'), false),
-                Arguments.of("about", List.of('a', 'x', 'o', 'y', 't'), false),
-                Arguments.of("about", List.of('x', 'b', 'o', 'u', 't'), false),
-                Arguments.of("about", List.of('a', 'b', 'o', 'u', 't'), true)
+                Arguments.of(ABATE, List.of('a', 'b', 'a', 't', 'x'), false),
+                Arguments.of(ABATE, List.of('a', 'b', 'a', 'x', 'e'), false),
+                Arguments.of(ABATE, List.of('a', 'b', 'x', 't', 'e'), false),
+                Arguments.of(ABATE, List.of('a', 'x', 'a', 't', 'e'), false),
+                Arguments.of(ABATE, List.of('x', 'b', 'a', 't', 'e'), false),
+                Arguments.of(ABATE, List.of('a', 'b', 'a', 't', 'e'), true)
         );
     }
 
     static Stream<Arguments> excludesParameters() {
         return Stream.of(
-                Arguments.of("about", List.of('a', 'b', 'o', 'u', 'x'), false),
-                Arguments.of("about", List.of('a', 'b', 'o', 'x', 't'), false),
-                Arguments.of("about", List.of('a', 'b', 'x', 'u', 't'), false),
-                Arguments.of("about", List.of('a', 'x', 'o', 'y', 't'), false),
-                Arguments.of("about", List.of('x', 'b', 'o', 'u', 't'), false),
-                Arguments.of("about", List.of('s', 'p', 'e', 'n', 'd'), true)
+                Arguments.of(ABATE, List.of('a', 'b', 'a', 't', 'x'), false),
+                Arguments.of(ABATE, List.of('a', 'b', 'a', 'x', 'e'), false),
+                Arguments.of(ABATE, List.of('a', 'b', 'x', 't', 'e'), false),
+                Arguments.of(ABATE, List.of('a', 'x', 'a', 't', 'e'), false),
+                Arguments.of(ABATE, List.of('x', 'b', 'a', 't', 'e'), false),
+                Arguments.of(ABATE, List.of('s', 'p', 'u', 'r', 'n'), true)
         );
     }
 }
