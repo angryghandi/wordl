@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
+import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,8 +27,9 @@ class WordRepositoryTest {
         final Word word = optionalWord.get();
         assertThat(word.getId()).isEqualTo(id);
         assertThat(word.getWord()).isEqualTo("joker");
-        assertThat(word.getUsed()).isNotNull(); // 2023-04-25
-
+        final Calendar cal = Calendar.getInstance();
+        cal.set(2023, Calendar.APRIL, 25);
+        assertThat(word.getUsed()).isInSameDayAs(cal.getTime());
     }
 
     @Test

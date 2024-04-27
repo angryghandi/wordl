@@ -15,6 +15,10 @@ import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
+import static com.angryghandi.wordl.TestConstants.ABACK;
+import static com.angryghandi.wordl.TestConstants.BACON;
+import static com.angryghandi.wordl.TestConstants.CABAL;
+import static com.angryghandi.wordl.TestConstants.WORD_STRINGS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -41,36 +45,36 @@ class WordControllerTest {
 
     @Test
     void all() {
-        when(wordServiceMock.all()).thenReturn(List.of("aback", "bacon", "cabal"));
+        when(wordServiceMock.all()).thenReturn(WORD_STRINGS);
 
         final ResponseEntity<List<String>> response = cut.all();
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).containsExactly("aback", "bacon", "cabal");
+        assertThat(response.getBody()).containsExactly(ABACK, BACON, CABAL);
 
         verify(wordServiceMock).all();
     }
 
     @Test
     void used() {
-        when(wordServiceMock.used()).thenReturn(List.of("aback", "bacon", "cabal"));
+        when(wordServiceMock.used()).thenReturn(WORD_STRINGS);
 
         final ResponseEntity<List<String>> response = cut.used();
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).containsExactly("aback", "bacon", "cabal");
+        assertThat(response.getBody()).containsExactly(ABACK, BACON, CABAL);
 
         verify(wordServiceMock).used();
     }
 
     @Test
     void unused() {
-        when(wordServiceMock.unused()).thenReturn(List.of("aback", "bacon", "cabal"));
+        when(wordServiceMock.unused()).thenReturn(WORD_STRINGS);
 
         final ResponseEntity<List<String>> response = cut.unused();
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).containsExactly("aback", "bacon", "cabal");
+        assertThat(response.getBody()).containsExactly(ABACK, BACON, CABAL);
 
         verify(wordServiceMock).unused();
     }
@@ -78,12 +82,12 @@ class WordControllerTest {
     @Test
     void search() {
         final SearchRequest searchRequest = SearchRequest.builder().build();
-        when(wordServiceMock.search(searchRequest)).thenReturn(List.of("aback", "bacon", "cabal"));
+        when(wordServiceMock.search(searchRequest)).thenReturn(WORD_STRINGS);
 
         final ResponseEntity<List<String>> response = cut.search(searchRequest);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).containsExactly("aback", "bacon", "cabal");
+        assertThat(response.getBody()).containsExactly(ABACK, BACON, CABAL);
 
         verify(wordServiceMock).search(searchRequest);
     }

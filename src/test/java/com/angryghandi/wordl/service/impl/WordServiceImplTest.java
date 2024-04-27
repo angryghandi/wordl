@@ -19,6 +19,12 @@ import org.mockito.quality.Strictness;
 import java.util.List;
 import java.util.stream.Stream;
 
+import static com.angryghandi.wordl.TestConstants.ABACK;
+import static com.angryghandi.wordl.TestConstants.ABASE;
+import static com.angryghandi.wordl.TestConstants.ABATE;
+import static com.angryghandi.wordl.TestConstants.BACON;
+import static com.angryghandi.wordl.TestConstants.CABAL;
+import static com.angryghandi.wordl.TestConstants.WORDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -27,22 +33,6 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.WARN)
 class WordServiceImplTest {
-
-    private static final String ABACK = "aback";
-
-    private static final String ABASE = "abase";
-
-    private static final String ABATE = "abate";
-
-    private static final String BACON = "bacon";
-
-    private static final String CABAL = "cabal";
-
-    private static final List<Word> WORDS = List.of(
-            Word.builder().word(ABACK).build(),
-            Word.builder().word(BACON).build(),
-            Word.builder().word(CABAL).build()
-    );
 
     @Mock
     private WordRepository wordRepositoryMock;
