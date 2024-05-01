@@ -1,6 +1,8 @@
 package com.angryghandi.wordl.service.impl;
 
 import com.angryghandi.wordl.dto.SearchRequest;
+import com.angryghandi.wordl.dto.UsedWordRequest;
+import com.angryghandi.wordl.dto.UsedWordResponse;
 import com.angryghandi.wordl.entity.Word;
 import com.angryghandi.wordl.repository.WordRepository;
 import com.angryghandi.wordl.service.WordService;
@@ -16,6 +18,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -25,6 +29,8 @@ import static com.angryghandi.wordl.TestConstants.ABATE;
 import static com.angryghandi.wordl.TestConstants.BACON;
 import static com.angryghandi.wordl.TestConstants.CABAL;
 import static com.angryghandi.wordl.TestConstants.WORDS;
+import static com.angryghandi.wordl.service.WordService.STATUS_FAIL;
+import static com.angryghandi.wordl.service.WordService.STATUS_SUCCESS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -37,11 +43,16 @@ class WordServiceImplTest {
     @Mock
     private WordRepository wordRepositoryMock;
 
+    private Date used;
+
     private WordService cut;
 
     @BeforeEach
     void beforeEach() {
         cut = new WordServiceImpl(wordRepositoryMock);
+        final Calendar calendar = Calendar.getInstance();
+        calendar.set(2024, Calendar.APRIL, 29);
+        used = calendar.getTime();
     }
 
     @AfterEach
@@ -104,6 +115,67 @@ class WordServiceImplTest {
         verify(wordRepositoryMock).findAllByWordLikeOrderByWord(searchWord);
     }
 
+    @Test
+    void used_not_found() {
+        final UsedWordRequest usedWordRequest = UsedWordRequest.builder()
+                .word(ABACK)
+                .used(used)
+                .build();
+        when(wordRepositoryMock.findByWord(ABACK)).thenReturn(null);
+
+        final UsedWordResponse usedWordResponse = cut.used(usedWordRequest);
+
+        assertThat(usedWordResponse.getStatus()).isEqualTo(STATUS_FAIL);
+        assertThat(usedWordResponse.getMessage()).isEqualTo("word is not in dictionary");
+        assertThat(usedWordResponse.getWord()).isEqualTo(ABACK);
+        assertThat(usedWordResponse.getUsed()).isEqualTo(used);
+
+        verify(wordRepositoryMock).findByWord(ABACK);
+    }
+
+    @Test
+    void used_already_used() {
+        final UsedWordRequest usedWordRequest = UsedWordRequest.builder()
+                .word(ABACK)
+                .used(used)
+                .build();
+        when(wordRepositoryMock.findByWord(ABACK)).thenReturn(Word.builder()
+                .word(ABACK)
+                .used(used)
+                .build());
+
+        final UsedWordResponse usedWordResponse = cut.used(usedWordRequest);
+
+        assertThat(usedWordResponse.getStatus()).isEqualTo(STATUS_FAIL);
+        assertThat(usedWordResponse.getMessage()).isEqualTo("word already used on 2024-04-29");
+        assertThat(usedWordResponse.getWord()).isEqualTo(ABACK);
+        assertThat(usedWordResponse.getUsed()).isEqualTo(used);
+
+        verify(wordRepositoryMock).findByWord(ABACK);
+    }
+
+    @Test
+    void used_success() {
+        final Word word = Word.builder()
+                .word(ABACK)
+                .build();
+        final UsedWordRequest usedWordRequest = UsedWordRequest.builder()
+                .word(ABACK)
+                .used(used)
+                .build();
+        when(wordRepositoryMock.findByWord(ABACK)).thenReturn(word);
+
+        final UsedWordResponse usedWordResponse = cut.used(usedWordRequest);
+
+        assertThat(usedWordResponse.getStatus()).isEqualTo(STATUS_SUCCESS);
+        assertThat(usedWordResponse.getMessage()).isNull();
+        assertThat(usedWordResponse.getWord()).isEqualTo(ABACK);
+        assertThat(usedWordResponse.getUsed()).isEqualTo(used);
+
+        verify(wordRepositoryMock).save(word);
+        verify(wordRepositoryMock).findByWord(ABACK);
+    }
+
     @ParameterizedTest
     @MethodSource("includesParameters")
     void includes(final String word, final List<Character> characters, final boolean expected) {
@@ -137,4 +209,5 @@ class WordServiceImplTest {
                 Arguments.of(ABATE, List.of('s', 'p', 'u', 'r', 'n'), true)
         );
     }
+
 }

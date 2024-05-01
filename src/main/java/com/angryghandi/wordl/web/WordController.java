@@ -1,6 +1,8 @@
 package com.angryghandi.wordl.web;
 
 import com.angryghandi.wordl.dto.SearchRequest;
+import com.angryghandi.wordl.dto.UsedWordRequest;
+import com.angryghandi.wordl.dto.UsedWordResponse;
 import com.angryghandi.wordl.service.WordService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -36,5 +38,10 @@ public class WordController {
     @PostMapping("/search")
     public ResponseEntity<List<String>> search(@Valid @RequestBody final SearchRequest searchRequest) {
         return ResponseEntity.ok().body(wordService.search(searchRequest));
+    }
+
+    @PostMapping("/used")
+    public ResponseEntity<UsedWordResponse> used(@Valid @RequestBody final UsedWordRequest usedWordRequest) {
+        return ResponseEntity.ok().body(wordService.used(usedWordRequest));
     }
 }

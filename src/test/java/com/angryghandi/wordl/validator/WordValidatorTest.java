@@ -10,13 +10,13 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class SearchWordValidatorTest {
+class WordValidatorTest {
 
-    private SearchWordValidator cut;
+    private WordValidator cut;
 
     @BeforeEach
     void beforeEach() {
-        cut = new SearchWordValidator();
+        cut = new WordValidator();
     }
 
     @ParameterizedTest
@@ -32,10 +32,8 @@ class SearchWordValidatorTest {
                 Arguments.of("around", false), // too long
                 Arguments.of("a*ound", false), // illegal character
                 Arguments.of("a%ound", false), // illegal character
-                Arguments.of("about", true),
-                Arguments.of("a____", true),
-                Arguments.of("a_o_t", true)
-
+                Arguments.of("aBout", false), // capital letter
+                Arguments.of("about", true)
         );
     }
 }

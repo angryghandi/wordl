@@ -9,6 +9,8 @@ import java.util.List;
 @Repository
 public interface WordRepository extends JpaRepository<Word, Long> {
 
+    Word findByWord(String word);
+    
     List<Word> findAllByOrderByWord();
 
     List<Word> findAllByUsedNullOrderByWord();

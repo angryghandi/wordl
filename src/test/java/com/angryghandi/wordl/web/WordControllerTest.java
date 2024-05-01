@@ -1,6 +1,8 @@
 package com.angryghandi.wordl.web;
 
 import com.angryghandi.wordl.dto.SearchRequest;
+import com.angryghandi.wordl.dto.UsedWordRequest;
+import com.angryghandi.wordl.dto.UsedWordResponse;
 import com.angryghandi.wordl.service.WordService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -90,5 +92,18 @@ class WordControllerTest {
         assertThat(response.getBody()).containsExactly(ABACK, BACON, CABAL);
 
         verify(wordServiceMock).search(searchRequest);
+    }
+    
+    @Test
+    void usedWord() {
+        UsedWordRequest usedWordRequest = UsedWordRequest.builder().build();
+        final UsedWordResponse usedWordResponse = UsedWordResponse.builder().build();
+        when(wordServiceMock.used(usedWordRequest)).thenReturn(usedWordResponse);
+        final ResponseEntity<UsedWordResponse> response = cut.used(usedWordRequest);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isEqualTo(usedWordResponse);
+
+        verify(wordServiceMock).used(usedWordRequest);
     }
 }

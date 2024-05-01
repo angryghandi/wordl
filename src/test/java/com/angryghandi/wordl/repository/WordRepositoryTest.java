@@ -33,6 +33,20 @@ class WordRepositoryTest {
     }
 
     @Test
+    void findByWord_not_found() {
+        assertThat(cut.findByWord("xxxxxx")).isNull();
+    }
+
+    @Test
+    void findByWord() {
+        final Word word = cut.findByWord("fancy");
+
+        assertThat(word).isNotNull();
+        assertThat(word.getWord()).isEqualTo("fancy");
+        assertThat(word.getUsed()).isNull();
+    }
+
+    @Test
     void findAllByOrderByWord() {
         final List<Word> words = cut.findAllByOrderByWord();
 
